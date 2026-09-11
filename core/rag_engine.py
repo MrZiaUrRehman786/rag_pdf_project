@@ -3,12 +3,13 @@ import tempfile
 from typing import Tuple, List
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from core import config
+
 
 def format_docs_with_sources(docs) -> Tuple[str, List[dict]]:
     """Formats retrieved documents into context string and extracts citations."""
@@ -24,8 +25,9 @@ def format_docs_with_sources(docs) -> Tuple[str, List[dict]]:
             "source": source_name
         })
         formatted_chunks.append(f"[Excerpt {i} | Page {page}]:\n{doc.page_content}")
-    
+
     return "\n\n".join(formatted_chunks), citations
+
 
 def initialize_rag_from_upload(uploaded_file, api_key: str):
     """
@@ -50,9 +52,11 @@ def initialize_rag_from_upload(uploaded_file, api_key: str):
         )
         chunks = splitter.split_documents(documents)
 
-        embeddings = GoogleGenerativeAIEmbeddings(
-            model=config.DEFAULT_EMBEDDING_MODEL,
-            google_api_key=api_key
+        # Runs locally on CPU/GPU — fast, free, and completely avoids Google API embedding issues
+        embeddings = HuggingFaceEmbeddings(
+            model_name=config.DEFAULT_EMBEDDING_MODEL,
+            model_kwargs={"device": "cpu"},
+            encode_kwargs={"normalize_embeddings": True}
         )
 
         vectorstore = Chroma.from_documents(

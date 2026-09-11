@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Ensure the project root is in the Python path (fixes ImportError for `core`)
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 import streamlit as st
 from core import config
 from core.rag_engine import initialize_rag_from_upload, format_docs_with_sources
