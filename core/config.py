@@ -10,7 +10,7 @@ try:
 except (KeyError, FileNotFoundError):
     GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY", "")
 
-DEFAULT_LLM_MODEL = "gemini-2.5-flash"
+DEFAULT_LLM_MODEL = "gemini-3.6-flash"
 DEFAULT_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 DEFAULT_CHUNK_SIZE = 1000
 DEFAULT_CHUNK_OVERLAP = 200
