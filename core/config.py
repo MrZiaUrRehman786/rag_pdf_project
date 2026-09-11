@@ -1,14 +1,16 @@
 import os
+import streamlit as st
 from dotenv import load_dotenv
 
-# Load variables from .env file if available
 load_dotenv()
 
-# Read API key from environment. NEVER hardcode it here.
-GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY", "")
+# Try Streamlit secrets first (for Cloud), fall back to env (for local)
+try:
+    GEMINI_API_KEY = st.secrets["GOOGLE_API_KEY"]
+except (KeyError, FileNotFoundError):
+    GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY", "")
 
-# Model & chunking configuration
-DEFAULT_LLM_MODEL = "gemini-1.5-flash"
+DEFAULT_LLM_MODEL = "gemini-2.5-flash"
 DEFAULT_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 DEFAULT_CHUNK_SIZE = 1000
 DEFAULT_CHUNK_OVERLAP = 200
